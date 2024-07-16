@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Psychopathology Grade Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 32px;
+            line-height: 1.5;
+            max-width: 800px;
+            margin-bottom: 20px;
+        }
+        .highlight {
+            color: red;
+        }
+        #code {
+            width: 400px;
+            height: 40px;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        button {
+            font-size: 24px;
+            padding: 10px 20px;
+        }
+        table {
+            font-size: 24px;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid black;
+        }
+        .contact {
+            font-size: 14px;
+            margin-top: 40px;
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        async function getGrades() {
+            const code = document.getElementById("code").value.trim();
+            const response = await fetch('grades.json');
+            if (!response.ok) {
+                document.getElementById("result").innerHTML = `<p>Error fetching grades.json file</p>`;
+                return;
+            }
+            const data = await response.json();
+            const student = data.find(student => student.Code == code);
+            if (student) {
+                const feedbackLink = `https://github.com/yourusername/yourrepository/raw/main/feedback/${student.Code}.pdf`; // Adjust this URL as needed
+                document.getElementById("result").innerHTML = `
+                    <table border="1">
+                        <tr><th>Name</th><td>${student.Name}</td></tr>
+                        <tr><th>Attendance+participation</th><td>${student['Attendance+participation']}</td></tr>
+                        <tr><th>Attendance+participation weight%</th><td>${student['Attendance+participation weight%']}%</td></tr>
+                        <tr><th>Additional lectures and activities</th><td>${student['Additional lectures and activities']}</td></tr>
+                        <tr><th>Additional lectures and activities weight%</th><td>${student['Additional lectures and activities weight%']}%</td></tr>
+                        <tr><th>Research paper</th><td>${student['Research paper']}</td></tr>
+                        <tr><th>Research paper weight%</th><td>${student['Research paper weight%']}%</td></tr>
+                        <tr>
+                            <th>Final Exam</th>
+                            <td>${student['Final Exam']}</td>
+                            <td><a href="${feedbackLink}" download><button>Download Detailed Feedback</button></a></td>
+                        </tr>
+                        <tr><th>Final Exam weight%</th><td>${student['Final Exam weight%']}%</td></tr>
+                        <tr><th>Bonus</th><td>${student.Bonus}</td></tr>
+                        <tr><th>Final Grade</th><td>${student['Final Grade']}</td></tr>
+                        <tr><th>Comments</th><td>${student.Comments}</td></tr>
+                    </table>
+                    <div class="contact">Dr. Nawras Kurzom: nkurzom@gmail.com</div>
+                `;
+            } else {
+                document.getElementById("result").innerHTML = `<p>Code not found</p>`;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Hi, this is the virtual assistant of Dr. Nawras Kurzom. Please enter your <span class="highlight">code</span> to view your grades for the Psychopathology course</h1>
+    <input type="text" id="code">
+    <button onclick="getGrades()">Submit</button>
+    <div id="result"></div>
+</body>
+</html>
